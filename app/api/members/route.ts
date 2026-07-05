@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         created_at,
         family_unit_id,
         prayer_group_id,
-        family_units ( family_name ),
+        family_units!church_members_family_unit_id_fkey ( family_name ),
         prayer_groups ( name, area )
       `)
       .eq('church_id', churchId)

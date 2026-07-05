@@ -23,7 +23,7 @@ export async function GET(
       .from('church_members')
       .select(`
         *,
-        family_units (
+        family_units!church_members_family_unit_id_fkey (
           id, family_name, physical_address,
           prayer_groups ( id, name, area )
         ),
