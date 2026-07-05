@@ -11,10 +11,10 @@ import { ok, badRequest, notFound, serverError } from '@/lib/types';
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
     if (!churchId) return serverError('Church ID not configured.');
 
@@ -133,10 +133,10 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id }   = params;
+    const { id }   = await params;
     const body     = await req.json();
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
     if (!churchId) return serverError('Church ID not configured.');
