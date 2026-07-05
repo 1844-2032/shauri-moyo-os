@@ -1,47 +1,205 @@
-import Link from "next/link";
+import { NextRequest } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+import { ok, badRequest, notFound, serverError } from '@/lib/types';
 
-export default function Header() {
-  return (
-    <>
-      <div className="bg-green-deep text-cloud text-[12.5px]">
-        <div className="max-w-[1080px] mx-auto px-8 py-2 flex gap-5 justify-end flex-wrap">
-          <Link href="/give" className="hover:text-parchment">Card giving</Link>
-          <Link href="/give" className="hover:text-parchment">M-Pesa giving</Link>
-          <a href="#" className="hover:text-parchment">Live stream</a>
-          <a href="#" className="hover:text-parchment">Prayer request</a>
-          <Link href="/request-meeting" className="hover:text-parchment">Request a meeting</Link>
-          <a href="#" className="hover:text-parchment">Announcements</a>
-        </div>
-      </div>
+// ============================================================
+// GET /api/members/[id]
+// Returns full member profile including family unit,
+// prayer group, roles, departments, giving summary,
+// and attendance summary.
+// ============================================================
 
-      <header className="bg-green text-parchment">
-        <div className="max-w-[1080px] mx-auto px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-[34px] h-[34px] rounded-full bg-gold flex items-center justify-center font-display font-semibold text-green-deep text-base">S</div>
-            <div className="font-display text-[17px] font-medium">
-              Shauri Moyo SDA Church
-              <span className="block font-sans text-[10.5px] tracking-[0.1em] uppercase text-cloud font-medium">Seventh-day Adventist</span>
-            </div>
-          </Link>
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+    const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
+    if (!churchId) return serverError('Church ID not configured.');
 
-          <nav className="hidden md:flex gap-6 text-sm text-cloud">
-            <Link href="/" className="hover:text-parchment py-1.5">Home</Link>
-            <div className="relative group">
-              <Link href="/about" className="hover:text-parchment py-1.5">About</Link>
-              <div className="hidden group-hover:block absolute top-full -left-3 bg-green border border-white/10 rounded-card p-2 min-w-[200px] z-10">
-                <Link href="/about" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Mission &amp; vision</Link>
-                <Link href="/about#pastors" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Our pastors</Link>
-                <Link href="/about#departments" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Departments</Link>
-              </div>
-            </div>
-            <Link href="/give" className="hover:text-parchment py-1.5">Give</Link>
-            <Link href="/request-meeting" className="hover:text-parchment py-1.5">Request a meeting</Link>
-            <Link href="/resources" className="hover:text-parchment py-1.5">Resources</Link>
-          </nav>
+    // Full member profile
+    const { data: member, error: memberError } = await supabaseAdmin
+      .from('church_members')
+      .select(`
+        *,
+        family_units (
+          id, family_name, physical_address,
+          prayer_groups ( id, name, area )
+        ),
+        prayer_groups ( id, name, area, meeting_day, meeting_time, meeting_location )
+      `)
+      .eq('id', id)
+      .eq('church_id', churchId)
+      .single();
 
-          <Link href="/request-meeting" className="btn-primary">Request a meeting</Link>
-        </div>
-      </header>
-    </>
+    if (memberError || !member) return notFound('Member not found.');
+
+    // Leadership roles
+    const { data: roles } = await supabaseAdmin
+      .from('member_roles')
+      .select('*')
+      .eq('member_id', id)
+      .eq('is_current', true)
+      .order('date_appointed', { ascending: false });
+
+    // Department memberships
+    const { data: departments } = await supabaseAdmin
+      .from('member_departments')
+      .select('*')
+      .eq('member_id', id)
+      .eq('is_current', true);
+
+    // Giving summary (last 12 months)
+    const twelveMonthsAgo = new Date();
+    twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+
+    const { data: givingSummary } = await supabaseAdmin
+      .from('donations')
+      .select('amount, fund_id, funds(name, category), payment_method, created_at')
+      .eq('member_id', id)
+      .eq('status', 'COMPLETED')
+      .eq('is_split_child', false)
+      .gte('created_at', twelveMonthsAgo.toISOString())
+      .order('created_at', { ascending: false });
+
+    // Total given this year
+    const currentYear = new Date().getFullYear();
+    const yearStart = `${currentYear}-01-01`;
+    const { data: yearTotal } = await supabaseAdmin
+      .from('donations')
+      .select('amount')
+      .eq('member_id', id)
+      .eq('status', 'COMPLETED')
+      .eq('is_split_child', false)
+      .gte('created_at', yearStart);
+
+    const totalThisYear = (yearTotal || []).reduce(
+      (sum, d) => sum + Number(d.amount), 0
+    );
+
+    // Attendance summary (last 8 Sabbaths)
+    const { data: recentAttendance } = await supabaseAdmin
+      .from('attendance_records')
+      .select(`
+        is_present,
+        registration_channel,
+        services_attended,
+        attendance_sessions ( service_date, service_type )
+      `)
+      .eq('member_id', id)
+      .order('created_at', { ascending: false })
+      .limit(24); // last 8 Sabbaths × 3 services
+
+    // Member health score calculation
+    // Combines attendance trend + giving trend
+    const attendanceScore  = calculateAttendanceScore(recentAttendance || []);
+    const givingScore      = calculateGivingScore(givingSummary || []);
+    const healthScore      = Math.round((attendanceScore + givingScore) / 2);
+    const healthFlag       = healthScore >= 70 ? 'green'
+                           : healthScore >= 40 ? 'amber'
+                           : 'red';
+
+    return ok({
+      member,
+      roles:           roles || [],
+      departments:     departments || [],
+      giving: {
+        last_12_months: givingSummary || [],
+        total_this_year: totalThisYear,
+      },
+      attendance: {
+        recent: recentAttendance || [],
+      },
+      health: {
+        score:           healthScore,
+        flag:            healthFlag,
+        attendance_score: attendanceScore,
+        giving_score:    givingScore,
+      },
+    });
+
+  } catch (err) {
+    console.error('Member GET [id] exception:', err);
+    return serverError();
+  }
+}
+
+// ============================================================
+// PUT /api/members/[id]
+// Updates a member record.
+// Only provided fields are updated (partial update).
+// ============================================================
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id }   = params;
+    const body     = await req.json();
+    const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
+    if (!churchId) return serverError('Church ID not configured.');
+
+    // Verify member belongs to this church
+    const { data: existing } = await supabaseAdmin
+      .from('church_members')
+      .select('id')
+      .eq('id', id)
+      .eq('church_id', churchId)
+      .single();
+
+    if (!existing) return notFound('Member not found.');
+
+    // Strip fields that must never be updated directly
+    const { id: _id, church_id: _cid, member_number: _mn, created_at: _ca, ...updateFields } = body;
+
+    if (Object.keys(updateFields).length === 0) {
+      return badRequest('No fields to update.');
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('church_members')
+      .update(updateFields)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Member update error:', error);
+      return serverError('Could not update member record.');
+    }
+
+    return ok({ message: 'Member updated successfully.', member: data });
+
+  } catch (err) {
+    console.error('Member PUT exception:', err);
+    return serverError();
+  }
+}
+
+// ============================================================
+// HEALTH SCORE HELPERS
+// ============================================================
+
+function calculateAttendanceScore(records: any[]): number {
+  if (!records.length) return 0;
+  const present = records.filter(r => r.is_present).length;
+  return Math.round((present / records.length) * 100);
+}
+
+function calculateGivingScore(giving: any[]): number {
+  if (!giving.length) return 0;
+  // Score based on recency and consistency
+  // Last 3 months of giving = full score
+  // 3-6 months = partial
+  // Over 6 months or nothing = low
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+  const recentGiving = giving.filter(
+    g => new Date(g.created_at) >= threeMonthsAgo
   );
+  if (recentGiving.length >= 3) return 100;
+  if (recentGiving.length >= 1) return 60;
+  return 20;
 }
