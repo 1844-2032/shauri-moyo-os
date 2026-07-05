@@ -1,10 +1,10 @@
 const resources = [
   { t: "SDA church manual", d: "The official governance reference for local church operations and policy.", href: "https://www.adventist.org/beliefs/documents/church-manual/" },
-  { t: "East Kenya Union conference", d: "Our local conference, responsible for pastoral appointments and church land.", href: "#" },
+  { t: "East Kenya Union conference", d: "Our local conference, responsible for pastoral appointments and church land.", href: "https://eku.adventist.org/" },
   { t: "General Conference", d: "The worldwide administrative body of the Seventh-day Adventist Church.", href: "https://gc.adventist.org" },
   { t: "Fundamental beliefs", d: "The 28 fundamental beliefs of the Seventh-day Adventist Church.", href: "https://www.adventist.org/beliefs/fundamental-beliefs/" },
-  { t: "Sermon archive & livestream", d: "Catch up on past sermons or join this week's service live.", href: "#" },
-  { t: "Church calendar", d: "Upcoming services, department activities, and congregation-wide events.", href: "#" },
+  { t: "Sermon archive & livestream", d: "Catch up on past sermons or join this week's service live.", href: "/live" },
+  { t: "Church calendar", d: "Upcoming services, department activities, and congregation-wide events.", href: "/announcements" },
 ];
 
 export default function Resources() {

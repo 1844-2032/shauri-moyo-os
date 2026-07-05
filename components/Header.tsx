@@ -7,10 +7,10 @@ export default function Header() {
         <div className="max-w-[1080px] mx-auto px-8 py-2 flex gap-5 justify-end flex-wrap">
           <Link href="/give" className="hover:text-parchment">Card giving</Link>
           <Link href="/give" className="hover:text-parchment">M-Pesa giving</Link>
-          <a href="#" className="hover:text-parchment">Live stream</a>
-          <a href="#" className="hover:text-parchment">Prayer request</a>
+          <Link href="/live" className="hover:text-parchment">Live stream</Link>
+          <Link href="/prayer-request" className="hover:text-parchment">Prayer request</Link>
           <Link href="/request-meeting" className="hover:text-parchment">Request a meeting</Link>
-          <a href="#" className="hover:text-parchment">Announcements</a>
+          <Link href="/announcements" className="hover:text-parchment">Announcements</Link>
         </div>
       </div>
 
