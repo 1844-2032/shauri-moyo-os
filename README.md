@@ -20,3 +20,6 @@ See `PESAPAL_SETUP.md` for the full step-by-step guide to connect Supabase and P
 - **Payments:** Pesapal (M-Pesa + card)
 - **Deployment:** Vercel
 - **Fonts:** Fraunces + Work Sans (Google Fonts)
+
+## Deployment notes
+_Last redeployed: 2026-07-05 — forcing a fresh Vercel build to refresh deployment check configuration._
