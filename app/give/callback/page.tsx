@@ -1,11 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 type Status = "PENDING" | "COMPLETED" | "FAILED" | "REVERSED" | "loading" | "error";
 
 export default function GiveCallback() {
+  return (
+    <Suspense
+      fallback={
+        <section className="py-20 px-8 min-h-[60vh] flex items-center justify-center">
+          <div className="card max-w-[480px] w-full text-center">
+            <h1 className="text-xl font-display mb-2">Confirming your gift&hellip;</h1>
+          </div>
+        </section>
+      }
+    >
+      <GiveCallbackInner />
+    </Suspense>
+  );
+}
+
+function GiveCallbackInner() {
   const searchParams = useSearchParams();
   const ref = searchParams.get("ref") || searchParams.get("OrderMerchantReference");
   const [status, setStatus] = useState<Status>("loading");
