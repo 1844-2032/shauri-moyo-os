@@ -42,8 +42,8 @@ export default function About() {
               <p className="text-sm text-ink-soft">Leads worship planning, preaching, and overall spiritual direction for the congregation.</p>
             </div>
             <div className="card">
-              <h3 className="text-lg mb-2 font-display">Associate pastor</h3>
-              <p className="text-sm text-ink-soft">Oversees pastoral care, member visitation, and department coordination.</p>
+              <h3 className="text-lg mb-2 font-display">Elders&apos; board</h3>
+              <p className="text-sm text-ink-soft">Supports pastoral care, member visitation, and department coordination alongside the senior pastor.</p>
             </div>
           </div>
         </div>

@@ -1,10 +1,10 @@
 const resources = [
-  { t: "SDA church manual", d: "The official governance reference for local church operations and policy.", href: "https://www.adventist.org/beliefs/documents/church-manual/" },
-  { t: "East Kenya Union conference", d: "Our local conference, responsible for pastoral appointments and church land.", href: "https://eku.adventist.org/" },
-  { t: "General Conference", d: "The worldwide administrative body of the Seventh-day Adventist Church.", href: "https://gc.adventist.org" },
-  { t: "Fundamental beliefs", d: "The 28 fundamental beliefs of the Seventh-day Adventist Church.", href: "https://www.adventist.org/beliefs/fundamental-beliefs/" },
-  { t: "Sermon archive & livestream", d: "Catch up on past sermons or join this week's service live.", href: "/live" },
-  { t: "Church calendar", d: "Upcoming services, department activities, and congregation-wide events.", href: "/announcements" },
+  { t: "SDA church manual", d: "The official governance reference for local church operations and policy.", href: "https://gc.adventist.org/church-manual/", external: true },
+  { t: "East Kenya Union conference", d: "Our local conference, responsible for pastoral appointments and church land.", href: "https://eku.adventist.org/", external: true },
+  { t: "General Conference", d: "The worldwide administrative body of the Seventh-day Adventist Church.", href: "https://gc.adventist.org", external: true },
+  { t: "Fundamental beliefs", d: "The 28 fundamental beliefs of the Seventh-day Adventist Church.", href: "https://www.adventist.org/beliefs", external: true },
+  { t: "Sermon archive & livestream", d: "Catch up on past sermons or join this week's service live.", href: "/live", external: false },
+  { t: "Church calendar", d: "Upcoming services, department activities, and congregation-wide events.", href: "/announcements", external: false },
 ];
 
 export default function Resources() {
@@ -24,7 +24,14 @@ export default function Resources() {
             <div key={r.t} className="card">
               <h3 className="text-lg mb-1.5 font-display">{r.t}</h3>
               <p className="text-sm text-ink-soft mb-2.5">{r.d}</p>
-              <a href={r.href} className="text-[12.5px] font-semibold text-sage-deep">View &rarr;</a>
+              <a
+                href={r.href}
+                target={r.external ? "_blank" : undefined}
+                rel={r.external ? "noopener noreferrer" : undefined}
+                className="text-[12.5px] font-semibold text-sage-deep"
+              >
+                View &rarr;
+              </a>
             </div>
           ))}
         </div>

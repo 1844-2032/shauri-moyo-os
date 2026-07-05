@@ -34,7 +34,7 @@ export default function Header() {
                 <Link href="/about#departments" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Departments</Link>
               </div>
             </div>
-            <Link href="/give" className="hover:text-parchment py-1.5">Give</Link>
+            <Link href="/give" className="hover:text-parchment py-1.5">Donations</Link>
             <Link href="/request-meeting" className="hover:text-parchment py-1.5">Request a meeting</Link>
             <Link href="/resources" className="hover:text-parchment py-1.5">Resources</Link>
           </nav>

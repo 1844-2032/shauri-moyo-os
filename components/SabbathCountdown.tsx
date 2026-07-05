@@ -34,9 +34,11 @@ export default function SabbathCountdown({ compact = false }: { compact?: boolea
       const now = new Date();
       const b = nextSabbathBoundaries(now);
       const diff = Math.max(0, b.target.getTime() - now.getTime());
-      const h = Math.floor(diff / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
+      const totalSeconds = Math.floor(diff / 1000);
+      const d = Math.floor(totalSeconds / 86400);
+      const h = Math.floor((totalSeconds % 86400) / 3600);
+      const m = Math.floor((totalSeconds % 3600) / 60);
+      const s = totalSeconds % 60;
 
       if (b.state === "during") {
         setLabel("Sabbath rest \u2014 ends in");
@@ -45,7 +47,7 @@ export default function SabbathCountdown({ compact = false }: { compact?: boolea
         setLabel("Sabbath begins in");
         setSub("Friday, 6:30 PM \u00B7 Nairobi");
       }
-      setTime(`${pad(h)}:${pad(m)}:${pad(s)}`);
+      setTime(d > 0 ? `${d}d ${pad(h)}h ${pad(m)}m` : `${pad(h)}:${pad(m)}:${pad(s)}`);
     };
     tick();
     const id = setInterval(tick, 1000);

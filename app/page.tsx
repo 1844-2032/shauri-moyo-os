@@ -11,14 +11,14 @@ export default function Home() {
             <h1 className="font-display text-[38px] my-3.5 text-parchment">A place to rest, worship, and belong</h1>
             <p className="text-[15px] text-cloud italic mb-7">&quot;Seek the Lord while He may be found&quot; &mdash; Isaiah 55:6</p>
             <div className="flex gap-3.5 flex-wrap">
-              <a href="#" className="btn-primary">Watch live</a>
-              <Link href="/give" className="btn-ghost">Give today</Link>
+              <Link href="/live" className="btn-primary">Watch live</Link>
+              <Link href="/give" className="btn-ghost">Donate today</Link>
             </div>
           </div>
           <div className="relative h-[320px] rounded-lg2 overflow-hidden shadow-[0_8px_24px_rgba(14,41,34,0.2)]"
                style={{ background: "linear-gradient(135deg, #163C2D 0%, #3C8463 55%, #9C7C18 130%)" }}>
             <span className="absolute bottom-3.5 left-4 text-[11px] text-white/65 uppercase tracking-[0.06em] z-[1]">
-              Sunday fellowship &middot; Shauri Moyo
+              Sabbath fellowship &middot; Shauri Moyo
             </span>
             <div className="absolute bottom-4 right-4 left-4">
               <SabbathCountdown compact />
@@ -32,7 +32,7 @@ export default function Home() {
           <div className="bg-gradient-to-br from-green-deep via-green to-green-mid rounded-lg2 p-7 flex items-center justify-between flex-wrap gap-4 text-parchment shadow-[0_8px_24px_rgba(14,41,34,0.15)]">
             <div>
               <span className="eyebrow text-gold">Save the date</span>
-              <h3 className="font-display text-xl text-parchment mb-1 mt-1">Quarterly camp meeting</h3>
+              <h3 className="font-display text-xl text-parchment mb-1 mt-1">Church Business meeting</h3>
               <p className="text-cloud text-[13.5px]">&quot;Anchored Hope&quot; &mdash; a week of revival, fellowship, and renewed commitment.</p>
             </div>
             <div className="bg-white/10 border border-white/20 rounded-card px-4.5 py-2.5 text-center text-[13px] text-parchment">
@@ -95,7 +95,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <Link href="/give" className="btn-primary mt-7 inline-block">Go to giving page &rarr;</Link>
+          <Link href="/give" className="btn-primary mt-7 inline-block">Go to donations page &rarr;</Link>
         </div>
       </section>
 
