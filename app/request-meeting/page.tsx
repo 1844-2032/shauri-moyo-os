@@ -3,7 +3,6 @@ import { useState } from "react";
 
 const WITH_OPTIONS: { value: string; label: string }[] = [
   { value: "senior_pastor", label: "Senior pastor" },
-  { value: "associate_pastor", label: "Associate pastor" },
   { value: "elders_board", label: "Elders' board" },
   { value: "treasury", label: "Treasury" },
   { value: "department_head", label: "A specific department head" },
@@ -92,7 +91,7 @@ export default function RequestMeeting() {
                     ))}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Full name</label>
                     <input type="text" placeholder="Your name" className="form-input" value={fullName} onChange={(e) => setFullName(e.target.value)} />
@@ -102,7 +101,7 @@ export default function RequestMeeting() {
                     <input type="text" placeholder="07XX XXX XXX or email" className="form-input" value={contact} onChange={(e) => setContact(e.target.value)} />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Preferred date</label>
                     <input type="date" className="form-input" value={preferredDate} onChange={(e) => setPreferredDate(e.target.value)} />

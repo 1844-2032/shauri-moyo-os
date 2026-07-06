@@ -1,10 +1,24 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<"about" | "give" | null>(null);
+
+  const toggle = (menu: "about" | "give") =>
+    setOpenMenu((cur) => (cur === menu ? null : menu));
+
+  const closeAll = () => {
+    setMobileOpen(false);
+    setOpenMenu(null);
+  };
+
   return (
     <>
       <div className="bg-green-deep text-cloud text-[12.5px]">
-        <div className="max-w-[1080px] mx-auto px-8 py-2 flex gap-5 justify-end flex-wrap">
+        <div className="max-w-[1080px] mx-auto px-5 md:px-8 py-2 hidden md:flex gap-5 justify-end flex-wrap">
           <Link href="/give" className="hover:text-parchment">Card giving</Link>
           <Link href="/give" className="hover:text-parchment">M-Pesa giving</Link>
           <Link href="/live" className="hover:text-parchment">Live stream</Link>
@@ -14,9 +28,9 @@ export default function Header() {
         </div>
       </div>
 
-      <header className="bg-green text-parchment">
-        <div className="max-w-[1080px] mx-auto px-8 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
+      <header className="bg-green text-parchment relative z-20">
+        <div className="max-w-[1080px] mx-auto px-5 md:px-8 py-4 flex items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2.5 shrink-0" onClick={closeAll}>
             <div className="w-[34px] h-[34px] rounded-full bg-gold flex items-center justify-center font-display font-semibold text-green-deep text-base">S</div>
             <div className="font-display text-[17px] font-medium">
               Shauri Moyo SDA Church
@@ -24,23 +38,86 @@ export default function Header() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex gap-6 text-sm text-cloud">
+          <nav className="hidden md:flex gap-6 text-sm text-cloud items-center">
             <Link href="/" className="hover:text-parchment py-1.5">Home</Link>
-            <div className="relative group">
-              <Link href="/about" className="hover:text-parchment py-1.5">About</Link>
-              <div className="hidden group-hover:block absolute top-full -left-3 bg-green border border-white/10 rounded-card p-2 min-w-[200px] z-10">
-                <Link href="/about" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Mission &amp; vision</Link>
-                <Link href="/about#pastors" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Our pastors</Link>
-                <Link href="/about#departments" className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Departments</Link>
-              </div>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggle("about")}
+                className="flex items-center gap-1 hover:text-parchment py-1.5"
+                aria-expanded={openMenu === "about"}
+              >
+                About
+                <span className={`text-[10px] transition-transform ${openMenu === "about" ? "rotate-180" : ""}`}>&#9662;</span>
+              </button>
+              {openMenu === "about" && (
+                <div className="absolute top-full -left-3 bg-green border border-white/10 rounded-card p-2 min-w-[200px] z-30 shadow-lg">
+                  <Link href="/about" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Mission &amp; vision</Link>
+                  <Link href="/about#pastors" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Our pastors</Link>
+                  <Link href="/about#departments" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Departments</Link>
+                </div>
+              )}
             </div>
-            <Link href="/give" className="hover:text-parchment py-1.5">Donations</Link>
+
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggle("give")}
+                className="flex items-center gap-1 hover:text-parchment py-1.5"
+                aria-expanded={openMenu === "give"}
+              >
+                Donations
+                <span className={`text-[10px] transition-transform ${openMenu === "give" ? "rotate-180" : ""}`}>&#9662;</span>
+              </button>
+              {openMenu === "give" && (
+                <div className="absolute top-full -left-3 bg-green border border-white/10 rounded-card p-2 min-w-[200px] z-30 shadow-lg">
+                  <Link href="/give" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Give via M-Pesa</Link>
+                  <Link href="/give" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Give via card</Link>
+                  <Link href="/give" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Bank transfer</Link>
+                  <div className="my-1 border-t border-white/10" />
+                  <Link href="/give" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment font-medium">All giving options &rarr;</Link>
+                </div>
+              )}
+            </div>
+
             <Link href="/request-meeting" className="hover:text-parchment py-1.5">Request a meeting</Link>
             <Link href="/resources" className="hover:text-parchment py-1.5">Resources</Link>
           </nav>
 
-          <Link href="/request-meeting" className="btn-primary">Request a meeting</Link>
+          <div className="flex items-center gap-3">
+            <Link href="/request-meeting" className="btn-primary hidden md:inline-block">Request a meeting</Link>
+            <button
+              type="button"
+              onClick={() => setMobileOpen((o) => !o)}
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-card border border-white/20 text-parchment"
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+            >
+              {mobileOpen ? (
+                <span className="text-lg leading-none">&#10005;</span>
+              ) : (
+                <span className="text-lg leading-none">&#9776;</span>
+              )}
+            </button>
+          </div>
         </div>
+
+        {mobileOpen && (
+          <div className="md:hidden border-t border-white/10 bg-green-deep px-5 py-4 flex flex-col gap-0.5 text-[14px] text-cloud">
+            <Link href="/" onClick={closeAll} className="py-2.5 hover:text-parchment">Home</Link>
+            <Link href="/about" onClick={closeAll} className="py-2.5 hover:text-parchment">About &mdash; Mission &amp; vision</Link>
+            <Link href="/about#pastors" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Our pastors</Link>
+            <Link href="/about#departments" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Departments</Link>
+            <Link href="/give" onClick={closeAll} className="py-2.5 hover:text-parchment">Donations</Link>
+            <Link href="/request-meeting" onClick={closeAll} className="py-2.5 hover:text-parchment">Request a meeting</Link>
+            <Link href="/resources" onClick={closeAll} className="py-2.5 hover:text-parchment">Resources</Link>
+            <div className="my-2 border-t border-white/10" />
+            <Link href="/live" onClick={closeAll} className="py-2.5 hover:text-parchment">Live stream</Link>
+            <Link href="/prayer-request" onClick={closeAll} className="py-2.5 hover:text-parchment">Prayer request</Link>
+            <Link href="/announcements" onClick={closeAll} className="py-2.5 hover:text-parchment">Announcements</Link>
+          </div>
+        )}
       </header>
     </>
   );

@@ -29,17 +29,19 @@ export default function Home() {
 
       <section className="py-12 px-8">
         <div className="max-w-[1080px] mx-auto">
-          <div className="bg-gradient-to-br from-green-deep via-green to-green-mid rounded-lg2 p-7 flex items-center justify-between flex-wrap gap-4 text-parchment shadow-[0_8px_24px_rgba(14,41,34,0.15)]">
-            <div>
+          <div className="bg-gradient-to-br from-green-deep via-green to-green-mid rounded-lg2 p-7 flex flex-col md:flex-row md:items-center gap-5 text-parchment shadow-[0_8px_24px_rgba(14,41,34,0.15)]">
+            <div className="flex-1 min-w-[200px]">
               <span className="eyebrow text-gold">Save the date</span>
               <h3 className="font-display text-xl text-parchment mb-1 mt-1">Church Business meeting</h3>
               <p className="text-cloud text-[13.5px]">&quot;Anchored Hope&quot; &mdash; a week of revival, fellowship, and renewed commitment.</p>
             </div>
-            <div className="bg-white/10 border border-white/20 rounded-card px-4.5 py-2.5 text-center text-[13px] text-parchment">
-              <strong className="block font-display text-lg text-gold">9&ndash;15</strong>
-              August
+            <div className="flex items-center gap-5 flex-wrap">
+              <div className="bg-white/10 border border-white/20 rounded-card px-4.5 py-2.5 text-center text-[13px] text-parchment shrink-0">
+                <strong className="block font-display text-lg text-gold">9&ndash;15</strong>
+                August
+              </div>
+              <Link href="/request-meeting" className="btn-primary shrink-0">Reserve a seat</Link>
             </div>
-            <Link href="/request-meeting" className="btn-primary">Reserve a seat</Link>
           </div>
         </div>
       </section>

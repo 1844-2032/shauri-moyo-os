@@ -1,7 +1,7 @@
 const announcements = [
   {
     date: "August 9–15",
-    title: "Quarterly camp meeting — \"Anchored Hope\"",
+    title: "Church Business meeting — \"Anchored Hope\"",
     body: "A week of revival, fellowship, and renewed commitment. Reserve your seat at the welcome desk or via the request a meeting page.",
     tag: "Event",
   },
@@ -14,7 +14,7 @@ const announcements = [
   {
     date: "Ongoing",
     title: "New members' class starts this month",
-    body: "Interested in baptism or transferring your membership? Speak to the associate pastor after service or request a meeting online.",
+    body: "Interested in baptism or transferring your membership? Speak to an elder after service or request a meeting online.",
     tag: "Discipleship",
   },
   {

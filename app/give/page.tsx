@@ -109,7 +109,7 @@ export default function Give() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-[13px] font-semibold mb-1.5">Amount (KES)</label>
               <input
@@ -144,7 +144,7 @@ export default function Give() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-[13px] font-semibold mb-1.5">Full name (optional)</label>
               <input type="text" placeholder="Your name" className="form-input" value={name} onChange={(e) => setName(e.target.value)} />

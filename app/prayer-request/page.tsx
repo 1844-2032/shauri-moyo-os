@@ -73,7 +73,7 @@ export default function PrayerRequest() {
                   <label className="block text-[13px] font-semibold mb-1.5">What would you like us to pray for?</label>
                   <textarea placeholder="Share as much or as little as you'd like" className="form-input min-h-[110px]" value={requestText} onChange={(e) => setRequestText(e.target.value)} />
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Full name (optional)</label>
                     <input type="text" placeholder="Your name" className="form-input" value={fullName} onChange={(e) => setFullName(e.target.value)} />

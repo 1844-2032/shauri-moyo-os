@@ -1,6 +1,6 @@
 const pastSermons = [
   { date: "June 28, 2026", title: "Anchored in the Storm", speaker: "Senior Pastor" },
-  { date: "June 21, 2026", title: "The Sabbath Rest We're Missing", speaker: "Associate Pastor" },
+  { date: "June 21, 2026", title: "The Sabbath Rest We're Missing", speaker: "Elders' Board" },
   { date: "June 14, 2026", title: "Living the Sabbath Rest — Part 3", speaker: "Senior Pastor" },
   { date: "June 7, 2026", title: "Faith That Moves", speaker: "Guest Speaker" },
 ];
