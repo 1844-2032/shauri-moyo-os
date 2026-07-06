@@ -1,7 +1,36 @@
 import Link from "next/link";
 import SabbathCountdown from "@/components/SabbathCountdown";
+import { supabaseAdmin } from "@/lib/supabase";
 
-export default function Home() {
+type PrayerGroup = {
+  id: string;
+  name: string;
+  area: string | null;
+  meeting_day: string | null;
+  meeting_time: string | null;
+  meeting_location: string | null;
+};
+
+async function getPrayerGroups(): Promise<PrayerGroup[]> {
+  const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
+  if (!churchId) return [];
+  const { data, error } = await supabaseAdmin
+    .from("prayer_groups")
+    .select("id, name, area, meeting_day, meeting_time, meeting_location")
+    .eq("church_id", churchId)
+    .eq("is_active", true)
+    .order("display_order", { ascending: true });
+  if (error) return [];
+  return data ?? [];
+}
+
+function capitalize(s: string | null) {
+  if (!s) return "";
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+export default async function Home() {
+  const prayerGroups = await getPrayerGroups();
   return (
     <>
       <section className="bg-green text-parchment py-16 px-8">
@@ -11,7 +40,7 @@ export default function Home() {
             <h1 className="font-display text-[38px] my-3.5 text-parchment">A place to rest, worship, and belong</h1>
             <p className="text-[15px] text-cloud italic mb-7">&quot;Seek the Lord while He may be found&quot; &mdash; Isaiah 55:6</p>
             <div className="flex gap-3.5 flex-wrap">
-              <Link href="/live" className="btn-primary">Watch live</Link>
+              <Link href="/sermons" className="btn-primary">Watch live</Link>
               <Link href="/give" className="btn-ghost">Donate today</Link>
             </div>
           </div>
@@ -101,6 +130,40 @@ export default function Home() {
         </div>
       </section>
 
+      <section id="prayer-groups" className="py-16 px-8">
+        <div className="max-w-[1080px] mx-auto">
+          <div className="max-w-[560px] mb-9">
+            <span className="eyebrow">Prayer ministry</span>
+            <h2 className="font-display text-[28px] mt-2">Join a neighbourhood prayer group</h2>
+            <p className="text-ink-soft mt-2.5 text-[15px]">Small groups meet weekly across Shauri Moyo and nearby estates. Find one near you and ask to join.</p>
+          </div>
+          {prayerGroups.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-4.5">
+              {prayerGroups.map((g) => (
+                <div key={g.id} className="card flex flex-col gap-2">
+                  <h3 className="text-[15px] font-semibold font-display">{g.name}</h3>
+                  {g.area && <p className="text-[13px] text-ink-soft">{g.area}</p>}
+                  {g.meeting_day && (
+                    <p className="text-[12.5px] text-sage-deep font-semibold uppercase tracking-wide">
+                      {capitalize(g.meeting_day)}{g.meeting_time ? ` · ${g.meeting_time.slice(0, 5)}` : ""}
+                    </p>
+                  )}
+                  {g.meeting_location && <p className="text-[12.5px] text-ink-soft">{g.meeting_location}</p>}
+                  <Link
+                    href={`/prayer-request?group=${encodeURIComponent(g.name)}`}
+                    className="text-[12.5px] font-semibold text-sage-deep mt-2"
+                  >
+                    Ask to join &rarr;
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-ink-soft text-[15px]">Prayer group listings are being updated. Please check back soon, or <Link href="/prayer-request" className="text-sage-deep font-semibold">request prayer here</Link>.</p>
+          )}
+        </div>
+      </section>
+
       <section id="departments" className="py-16 px-8">
         <div className="max-w-[1080px] mx-auto">
           <div className="max-w-[560px] mb-9">
@@ -108,16 +171,23 @@ export default function Home() {
             <h2 className="font-display text-[28px] mt-2">Find your place at Shauri Moyo</h2>
             <p className="text-ink-soft mt-2.5 text-[15px]">Every department welcomes new hands. Tap one to ask about joining.</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3.5">
             {[
-              "Personal ministries", "Adventist men", "Women's ministries", "Adventist youth",
-              "Pathfinders & adventurers", "Music ministry & choir", "Evangelism", "Sabbath school",
+              { name: "Personal ministries", href: "/request-meeting" },
+              { name: "Adventist men", href: "/ministries/men" },
+              { name: "Women's ministries", href: "/ministries/women" },
+              { name: "Adventist youth", href: "/ministries/youth" },
+              { name: "Children's ministry", href: "/ministries/children" },
+              { name: "Pathfinders & adventurers", href: "/request-meeting" },
+              { name: "Music ministry & choir", href: "/request-meeting" },
+              { name: "Evangelism", href: "/request-meeting" },
+              { name: "Sabbath school", href: "/request-meeting" },
             ].map((d) => (
-              <div key={d} className="card flex flex-col gap-2.5 hover:-translate-y-0.5 transition-transform">
+              <Link key={d.name} href={d.href} className="card flex flex-col gap-2.5 hover:-translate-y-0.5 transition-transform">
                 <div className="w-9 h-9 rounded-lg bg-sage/15 flex items-center justify-center text-sage-deep font-display">&#10047;</div>
-                <h3 className="text-[15px] font-semibold">{d}</h3>
+                <h3 className="text-[15px] font-semibold">{d.name}</h3>
                 <span className="text-[12.5px] font-semibold text-sage-deep mt-auto">Join this unit &rarr;</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

@@ -5,9 +5,9 @@ import { useState } from "react";
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [openMenu, setOpenMenu] = useState<"about" | "give" | null>(null);
+  const [openMenu, setOpenMenu] = useState<"about" | "give" | "ministries" | null>(null);
 
-  const toggle = (menu: "about" | "give") =>
+  const toggle = (menu: "about" | "give" | "ministries") =>
     setOpenMenu((cur) => (cur === menu ? null : menu));
 
   const closeAll = () => {
@@ -21,10 +21,11 @@ export default function Header() {
         <div className="max-w-[1080px] mx-auto px-5 md:px-8 py-2 hidden md:flex gap-5 justify-end flex-wrap">
           <Link href="/give" className="hover:text-parchment">Card giving</Link>
           <Link href="/give" className="hover:text-parchment">M-Pesa giving</Link>
-          <Link href="/live" className="hover:text-parchment">Live stream</Link>
+          <Link href="/sermons" className="hover:text-parchment">Sermons</Link>
           <Link href="/prayer-request" className="hover:text-parchment">Prayer request</Link>
           <Link href="/request-meeting" className="hover:text-parchment">Request a meeting</Link>
           <Link href="/announcements" className="hover:text-parchment">Announcements</Link>
+          <Link href="/calendar" className="hover:text-parchment">Calendar</Link>
         </div>
       </div>
 
@@ -81,6 +82,27 @@ export default function Header() {
               )}
             </div>
 
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => toggle("ministries")}
+                className="flex items-center gap-1 hover:text-parchment py-1.5"
+                aria-expanded={openMenu === "ministries"}
+              >
+                Ministries
+                <span className={`text-[10px] transition-transform ${openMenu === "ministries" ? "rotate-180" : ""}`}>&#9662;</span>
+              </button>
+              {openMenu === "ministries" && (
+                <div className="absolute top-full -left-3 bg-green border border-white/10 rounded-card p-2 min-w-[200px] z-30 shadow-lg">
+                  <Link href="/ministries/women" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Women&apos;s ministries</Link>
+                  <Link href="/ministries/men" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Men&apos;s ministries</Link>
+                  <Link href="/ministries/youth" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Youth ministries</Link>
+                  <Link href="/ministries/children" onClick={closeAll} className="block px-3 py-2 text-[13.5px] rounded hover:bg-white/5 hover:text-parchment">Children&apos;s ministry</Link>
+                </div>
+              )}
+            </div>
+
+            <Link href="/school" className="hover:text-parchment py-1.5">School</Link>
             <Link href="/request-meeting" className="hover:text-parchment py-1.5">Request a meeting</Link>
             <Link href="/resources" className="hover:text-parchment py-1.5">Resources</Link>
           </nav>
@@ -110,12 +132,18 @@ export default function Header() {
             <Link href="/about#pastors" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Our pastors</Link>
             <Link href="/about#departments" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Departments</Link>
             <Link href="/give" onClick={closeAll} className="py-2.5 hover:text-parchment">Donations</Link>
+            <Link href="/ministries/women" onClick={closeAll} className="py-2.5 hover:text-parchment">Ministries &mdash; Women&apos;s</Link>
+            <Link href="/ministries/men" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Men&apos;s</Link>
+            <Link href="/ministries/youth" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Youth</Link>
+            <Link href="/ministries/children" onClick={closeAll} className="py-2.5 pl-3 hover:text-parchment">Children&apos;s</Link>
+            <Link href="/school" onClick={closeAll} className="py-2.5 hover:text-parchment">School</Link>
             <Link href="/request-meeting" onClick={closeAll} className="py-2.5 hover:text-parchment">Request a meeting</Link>
             <Link href="/resources" onClick={closeAll} className="py-2.5 hover:text-parchment">Resources</Link>
             <div className="my-2 border-t border-white/10" />
-            <Link href="/live" onClick={closeAll} className="py-2.5 hover:text-parchment">Live stream</Link>
+            <Link href="/sermons" onClick={closeAll} className="py-2.5 hover:text-parchment">Sermons</Link>
             <Link href="/prayer-request" onClick={closeAll} className="py-2.5 hover:text-parchment">Prayer request</Link>
             <Link href="/announcements" onClick={closeAll} className="py-2.5 hover:text-parchment">Announcements</Link>
+            <Link href="/calendar" onClick={closeAll} className="py-2.5 hover:text-parchment">Calendar</Link>
           </div>
         )}
       </header>

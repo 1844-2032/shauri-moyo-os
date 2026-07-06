@@ -3,8 +3,9 @@ const resources = [
   { t: "East Kenya Union conference", d: "Our local conference, responsible for pastoral appointments and church land.", href: "https://eku.adventist.org/", external: true },
   { t: "General Conference", d: "The worldwide administrative body of the Seventh-day Adventist Church.", href: "https://gc.adventist.org", external: true },
   { t: "Fundamental beliefs", d: "The 28 fundamental beliefs of the Seventh-day Adventist Church.", href: "https://www.adventist.org/beliefs", external: true },
-  { t: "Sermon archive & livestream", d: "Catch up on past sermons or join this week's service live.", href: "/live", external: false },
-  { t: "Church calendar", d: "Upcoming services, department activities, and congregation-wide events.", href: "/announcements", external: false },
+  { t: "Sermons & livestream", d: "Catch up on past sermons or join this week's service live.", href: "/sermons", external: false },
+  { t: "Church calendar", d: "Annual meetings, quarterly events, and regular weekly gatherings.", href: "/calendar", external: false },
+  { t: "Shauri Moyo Seventh-day Adventist School", d: "Christ-centred education for children of the congregation and community.", href: "/school", external: false },
 ];
 
 export default function Resources() {

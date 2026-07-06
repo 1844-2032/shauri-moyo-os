@@ -1,12 +1,30 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function PrayerRequest() {
+  return (
+    <Suspense fallback={null}>
+      <PrayerRequestForm />
+    </Suspense>
+  );
+}
+
+function PrayerRequestForm() {
+  const searchParams = useSearchParams();
+  const groupName = searchParams.get("group");
+
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [requestText, setRequestText] = useState("");
   const [confidential, setConfidential] = useState(false);
+
+  useEffect(() => {
+    if (groupName) {
+      setRequestText(`I'd like to join the ${groupName}.`);
+    }
+  }, [groupName]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);

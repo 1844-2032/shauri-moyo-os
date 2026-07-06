@@ -1,8 +1,19 @@
+import Link from "next/link";
+
 export default function About() {
   const departments = [
-    "Personal ministries", "Adventist men", "Women's ministries", "Adventist youth",
-    "Pathfinders & adventurers", "Music ministry & choir", "Evangelism", "Sabbath school",
-    "Family life ministry", "Children's ministry", "Elders' board", "Treasury",
+    { name: "Personal ministries", href: "/request-meeting" },
+    { name: "Adventist men", href: "/ministries/men" },
+    { name: "Women's ministries", href: "/ministries/women" },
+    { name: "Adventist youth", href: "/ministries/youth" },
+    { name: "Pathfinders & adventurers", href: "/request-meeting" },
+    { name: "Music ministry & choir", href: "/request-meeting" },
+    { name: "Evangelism", href: "/request-meeting" },
+    { name: "Sabbath school", href: "/request-meeting" },
+    { name: "Family life ministry", href: "/request-meeting" },
+    { name: "Children's ministry", href: "/ministries/children" },
+    { name: "Elders' board", href: "/request-meeting" },
+    { name: "Treasury", href: "/request-meeting" },
   ];
   return (
     <>
@@ -58,10 +69,10 @@ export default function About() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
             {departments.map((d) => (
-              <div key={d} className="card">
-                <h3 className="text-[15px] font-semibold mb-1">{d}</h3>
+              <Link key={d.name} href={d.href} className="card block hover:-translate-y-0.5 transition-transform">
+                <h3 className="text-[15px] font-semibold mb-1">{d.name}</h3>
                 <span className="text-[12.5px] font-semibold text-sage-deep">Join this unit &rarr;</span>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
