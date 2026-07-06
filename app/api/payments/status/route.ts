@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 
   const { data: donation, error } = await supabaseAdmin
     .from("donations")
-    .select("status, amount, fund, pesapal_order_tracking_id, confirmation_code")
+    .select("status, amount, pesapal_order_tracking_id, confirmation_code, funds(name)")
     .eq("merchant_reference", ref)
     .single();
 

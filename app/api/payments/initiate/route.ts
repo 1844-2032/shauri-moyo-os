@@ -55,20 +55,45 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
 
+    // Look up the fund's real id — the donations table stores fund_id,
+    // not the slug used by the giving form.
+    const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
+    if (!churchId) {
+      return NextResponse.json({ error: "Church ID not configured." }, { status: 500 });
+    }
+
+    const { data: fundRow, error: fundError } = await supabaseAdmin
+      .from("funds")
+      .select("id")
+      .eq("church_id", churchId)
+      .eq("slug", fund)
+      .single();
+
+    if (fundError || !fundRow) {
+      console.error("Fund lookup error:", fundError);
+      return NextResponse.json({ error: "This fund isn't set up yet. Please contact us." }, { status: 500 });
+    }
+
     // --- Create a pending record first, so we never lose track of an
     // attempted gift even if Pesapal or the network fails after this. ----
     const merchantReference = `SMC-${Date.now()}-${randomUUID().slice(0, 8)}`;
 
+    // The public form only knows "mpesa" / "card" — the donations table's
+    // payment_method column expects the more specific Pesapal-rail values.
+    const dbPaymentMethod = paymentMethod === "mpesa" ? "mpesa_pesapal" : "card_pesapal";
+
     const { error: insertError } = await supabaseAdmin.from("donations").insert({
-      fund,
+      church_id: churchId,
+      fund_id: fundRow.id,
       amount,
       currency: "KES",
       donor_name: donorName || null,
       donor_phone: donorPhone || null,
       donor_email: donorEmail || null,
-      payment_method: paymentMethod,
+      payment_method: dbPaymentMethod,
       merchant_reference: merchantReference,
       status: "PENDING",
+      entry_method: "automatic",
     });
 
     if (insertError) {

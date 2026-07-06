@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-green-deep text-cloud text-[13px] py-12">
@@ -18,7 +20,10 @@ export default function Footer() {
         </div>
         <div className="border-t border-white/10 pt-4 flex flex-col sm:flex-row justify-between gap-2">
           <span>&copy; 2026 Shauri Moyo SDA Church</span>
-          <span>Powered by Kanisa</span>
+          <span className="flex items-center gap-4">
+            <Link href="/staff/login" className="hover:text-parchment">Staff login</Link>
+            <span>Powered by Kanisa</span>
+          </span>
         </div>
       </div>
     </footer>

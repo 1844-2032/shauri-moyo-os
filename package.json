@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "register-ipn": "tsx scripts/register-ipn.ts"
+    "register-ipn": "tsx scripts/register-ipn.ts",
+    "create-staff-account": "tsx scripts/create-staff-account.ts"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.45.4",
     "next": "^16.2.9",
     "react": "^19.2.7",
