@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { created, badRequest, serverError } from '@/lib/types';
+import { created, badRequest, serverError, isValidEmail, PRAYER_CATEGORIES } from '@/lib/types';
+
+const VALID_CATEGORIES = PRAYER_CATEGORIES.map((c) => c.value);
 
 // ============================================================
 // POST /api/prayer-requests
@@ -15,11 +17,18 @@ export async function POST(req: NextRequest) {
       phone,
       email,
       request_text,
+      category = 'general',
       is_confidential = false,
     } = body;
 
     if (!request_text?.trim()) {
       return badRequest('Please share what you would like us to pray for.');
+    }
+    if (email?.trim() && !isValidEmail(email)) {
+      return badRequest('Please enter a valid email address.');
+    }
+    if (!VALID_CATEGORIES.includes(category)) {
+      return badRequest('Please select a valid category.');
     }
 
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
@@ -33,6 +42,7 @@ export async function POST(req: NextRequest) {
         phone: phone?.trim() || null,
         email: email?.trim().toLowerCase() || null,
         request_text: request_text.trim(),
+        category,
         is_confidential,
       })
       .select()

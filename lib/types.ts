@@ -118,3 +118,41 @@ export function todayDate(): string {
 export function isSaturday(): boolean {
   return new Date().getDay() === 6;
 }
+
+// ---- Form validation helpers ----
+// Shared across public-facing forms (prayer request, meeting request,
+// giving) and their API routes, so client and server always agree.
+
+export function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+// Accepts Kenyan mobile formats: 07XXXXXXXX, 01XXXXXXXX, +2547XXXXXXXX,
+// +2541XXXXXXXX, 2547XXXXXXXX, 2541XXXXXXXX (spaces/dashes ignored).
+export function isValidKenyanPhone(value: string): boolean {
+  const digits = value.replace(/[\s-]/g, '');
+  return /^(?:\+?254|0)(7|1)\d{8}$/.test(digits);
+}
+
+// Formats a raw numeric-ish string with thousands separators as the
+// user types, e.g. "2000" -> "2,000". Strips non-digit characters first.
+export function formatAmountInput(value: string): string {
+  const digitsOnly = value.replace(/[^\d]/g, '');
+  if (!digitsOnly) return '';
+  return Number(digitsOnly).toLocaleString('en-US');
+}
+
+export const PRAYER_CATEGORIES: { value: string; label: string }[] = [
+  { value: 'general', label: 'General' },
+  { value: 'health', label: 'Health & healing' },
+  { value: 'family', label: 'Family' },
+  { value: 'financial', label: 'Financial' },
+  { value: 'thanksgiving', label: 'Thanksgiving' },
+  { value: 'other', label: 'Other' },
+];
+
+export const MEETING_MODES: { value: string; label: string }[] = [
+  { value: 'in_person', label: 'In person' },
+  { value: 'phone_call', label: 'Phone call' },
+  { value: 'video_call', label: 'Video call' },
+];

@@ -1,6 +1,8 @@
 import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
-import { created, badRequest, serverError } from '@/lib/types';
+import { created, badRequest, serverError, isValidEmail, isValidKenyanPhone, MEETING_MODES } from '@/lib/types';
+
+const VALID_MODES = MEETING_MODES.map((m) => m.value);
 
 // ============================================================
 // POST /api/meeting-requests
@@ -17,12 +19,19 @@ export async function POST(req: NextRequest) {
       preferred_date,
       preferred_time,
       reason,
+      meeting_mode = 'in_person',
       is_confidential = false,
     } = body;
 
     if (!full_name?.trim()) return badRequest('Full name is required.');
     if (!contact?.trim())   return badRequest('Phone or email is required.');
+    if (!isValidEmail(contact) && !isValidKenyanPhone(contact)) {
+      return badRequest('Please enter a valid phone number or email address.');
+    }
     if (!reason?.trim())    return badRequest('Please share the reason for the meeting.');
+    if (!VALID_MODES.includes(meeting_mode)) {
+      return badRequest('Please select a valid meeting mode.');
+    }
 
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
     if (!churchId) return serverError('Church ID not configured.');
@@ -37,6 +46,7 @@ export async function POST(req: NextRequest) {
         preferred_date: preferred_date || null,
         preferred_time: preferred_time || null,
         reason: reason.trim(),
+        meeting_mode,
         is_confidential,
       })
       .select()

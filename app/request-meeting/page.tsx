@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { isValidEmail, isValidKenyanPhone, MEETING_MODES } from "@/lib/types";
 
 const WITH_OPTIONS: { value: string; label: string }[] = [
   { value: "senior_pastor", label: "Senior pastor" },
@@ -8,22 +9,31 @@ const WITH_OPTIONS: { value: string; label: string }[] = [
   { value: "department_head", label: "A specific department head" },
 ];
 
+const todayISO = () => new Date().toISOString().split("T")[0];
+
 export default function RequestMeeting() {
   const [requestedWith, setRequestedWith] = useState(WITH_OPTIONS[0].value);
   const [fullName, setFullName] = useState("");
   const [contact, setContact] = useState("");
+  const [meetingMode, setMeetingMode] = useState(MEETING_MODES[0].value);
   const [preferredDate, setPreferredDate] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
   const [reason, setReason] = useState("");
   const [confidential, setConfidential] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [contactError, setContactError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     setError(null);
+    setContactError(null);
     if (!fullName.trim()) return setError("Please enter your full name.");
     if (!contact.trim()) return setError("Please enter a phone number or email.");
+    if (!isValidEmail(contact) && !isValidKenyanPhone(contact)) {
+      setContactError("Please enter a valid phone number or email address.");
+      return;
+    }
     if (!reason.trim()) return setError("Please share what you'd like to discuss.");
 
     setSubmitting(true);
@@ -35,6 +45,7 @@ export default function RequestMeeting() {
           requested_with: requestedWith,
           full_name: fullName,
           contact,
+          meeting_mode: meetingMode,
           preferred_date: preferredDate || undefined,
           preferred_time: preferredTime || undefined,
           reason,
@@ -50,11 +61,18 @@ export default function RequestMeeting() {
       setSuccess(data.message);
       setFullName(""); setContact(""); setPreferredDate("");
       setPreferredTime(""); setReason(""); setConfidential(false);
+      setMeetingMode(MEETING_MODES[0].value);
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const resetForSubmitAnother = () => {
+    setSuccess(null);
+    setError(null);
+    setContactError(null);
   };
 
   return (
@@ -73,8 +91,13 @@ export default function RequestMeeting() {
         <div className="max-w-[1080px] mx-auto grid md:grid-cols-[1.4fr_1fr] gap-10 items-start">
           <div className="card">
             {success ? (
-              <div className="text-[13.5px] text-green-800 bg-green-50 border border-green-200 rounded-card px-4 py-4">
-                {success}
+              <div>
+                <div className="text-[13.5px] text-green-800 bg-green-50 border border-green-200 rounded-card px-4 py-4 mb-4">
+                  {success}
+                </div>
+                <button type="button" className="btn-secondary w-full" onClick={resetForSubmitAnother}>
+                  Submit another request
+                </button>
               </div>
             ) : (
               <>
@@ -91,6 +114,14 @@ export default function RequestMeeting() {
                     ))}
                   </select>
                 </div>
+                <div className="mb-4">
+                  <label className="block text-[13px] font-semibold mb-1.5">How would you like to meet?</label>
+                  <select className="form-input" value={meetingMode} onChange={(e) => setMeetingMode(e.target.value)}>
+                    {MEETING_MODES.map((m) => (
+                      <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Full name</label>
@@ -98,13 +129,20 @@ export default function RequestMeeting() {
                   </div>
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Phone or email</label>
-                    <input type="text" placeholder="07XX XXX XXX or email" className="form-input" value={contact} onChange={(e) => setContact(e.target.value)} />
+                    <input
+                      type="text"
+                      placeholder="07XX XXX XXX or email"
+                      className="form-input"
+                      value={contact}
+                      onChange={(e) => { setContact(e.target.value); if (contactError) setContactError(null); }}
+                    />
+                    {contactError && <p className="text-[12px] text-red-600 mt-1">{contactError}</p>}
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Preferred date</label>
-                    <input type="date" className="form-input" value={preferredDate} onChange={(e) => setPreferredDate(e.target.value)} />
+                    <input type="date" min={todayISO()} className="form-input" value={preferredDate} onChange={(e) => setPreferredDate(e.target.value)} />
                   </div>
                   <div>
                     <label className="block text-[13px] font-semibold mb-1.5">Preferred time</label>

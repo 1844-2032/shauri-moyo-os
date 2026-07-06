@@ -1,8 +1,11 @@
 "use client";
 import { useState } from "react";
+import { formatAmountInput, isValidEmail, isValidKenyanPhone } from "@/lib/types";
 
 type Fund = "tithe_offering" | "building_fund" | "missions_evangelism";
 type Method = "mpesa" | "card";
+
+const QUICK_AMOUNTS = [500, 1000, 2000, 5000, 10000];
 
 const FUNDS: { value: Fund; label: string; desc: string; methods: string[] }[] = [
   { value: "tithe_offering", label: "Tithe & offering", desc: "Your regular, faithful return to the work of God.", methods: ["M-Pesa", "Card"] },
@@ -19,9 +22,11 @@ export default function Give() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldError, setFieldError] = useState<string | null>(null);
 
   const handleSubmit = async () => {
     setError(null);
+    setFieldError(null);
     const numericAmount = Number(amount.replace(/,/g, ""));
 
     if (!numericAmount || numericAmount <= 0) {
@@ -30,6 +35,14 @@ export default function Give() {
     }
     if (method === "mpesa" && !phone.trim()) {
       setError("Please enter your M-Pesa phone number.");
+      return;
+    }
+    if (method === "mpesa" && phone.trim() && !isValidKenyanPhone(phone)) {
+      setFieldError("Please enter a valid Kenyan phone number (e.g. 07XX XXX XXX).");
+      return;
+    }
+    if (email.trim() && !isValidEmail(email)) {
+      setFieldError("Please enter a valid email address.");
       return;
     }
 
@@ -94,9 +107,9 @@ export default function Give() {
         <div className="card max-w-[600px] mx-auto">
           <h2 className="text-xl font-display mb-5">Give now</h2>
 
-          {error && (
+          {(error || fieldError) && (
             <div className="mb-4 text-[13px] text-red-700 bg-red-50 border border-red-200 rounded-card px-3 py-2.5">
-              {error}
+              {error || fieldError}
             </div>
           )}
 
@@ -118,8 +131,20 @@ export default function Give() {
                 placeholder="e.g. 2,000"
                 className="form-input"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => setAmount(formatAmountInput(e.target.value))}
               />
+              <div className="flex gap-2 flex-wrap mt-2">
+                {QUICK_AMOUNTS.map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    className="text-[12px] px-3 py-1.5 rounded-full border border-line hover:border-gold hover:bg-gold/10 transition-colors"
+                    onClick={() => setAmount(a.toLocaleString("en-US"))}
+                  >
+                    {a.toLocaleString("en-US")}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
               <label className="block text-[13px] font-semibold mb-1.5">Payment method</label>
@@ -138,7 +163,7 @@ export default function Give() {
                 placeholder="07XX XXX XXX"
                 className="form-input"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => { setPhone(e.target.value); if (fieldError) setFieldError(null); }}
               />
               <p className="text-[12.5px] text-ink-soft mt-1">You&apos;ll receive an STK push prompt to confirm the payment.</p>
             </div>
@@ -151,7 +176,13 @@ export default function Give() {
             </div>
             <div>
               <label className="block text-[13px] font-semibold mb-1.5">Email (optional)</label>
-              <input type="email" placeholder="you@example.com" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input
+                type="email"
+                placeholder="you@example.com"
+                className="form-input"
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); if (fieldError) setFieldError(null); }}
+              />
             </div>
           </div>
 

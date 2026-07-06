@@ -12,6 +12,9 @@
   .btn-dark {
     @apply inline-block bg-green text-parchment font-semibold text-[15px] px-6 py-3 rounded-card hover:bg-green-deep transition-colors;
   }
+  .btn-secondary {
+    @apply inline-block bg-transparent text-green font-semibold text-[15px] px-6 py-3 rounded-card border border-green/40 hover:bg-green/5 transition-colors;
+  }
   .eyebrow {
     @apply text-[12px] font-semibold tracking-[0.12em] uppercase text-gold-deep;
   }

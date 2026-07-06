@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
 import { supabaseAdmin, DonationFund, PaymentMethod } from "@/lib/supabase";
 import { submitOrder } from "@/lib/pesapal";
+import { isValidEmail, isValidKenyanPhone } from "@/lib/types";
 
 const FUND_LABELS: Record<DonationFund, string> = {
   tithe_offering: "Tithe & Offering",
@@ -43,6 +44,15 @@ export async function POST(req: NextRequest) {
         { error: "Phone number is required for M-Pesa." },
         { status: 400 }
       );
+    }
+    if (paymentMethod === "mpesa" && donorPhone && !isValidKenyanPhone(donorPhone)) {
+      return NextResponse.json(
+        { error: "Please enter a valid Kenyan phone number (e.g. 07XX XXX XXX)." },
+        { status: 400 }
+      );
+    }
+    if (donorEmail && !isValidEmail(donorEmail)) {
+      return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
     }
 
     // --- Create a pending record first, so we never lose track of an

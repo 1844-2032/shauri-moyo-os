@@ -1,6 +1,9 @@
 "use client";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { isValidEmail, PRAYER_CATEGORIES } from "@/lib/types";
+
+const REQUEST_MAX_LENGTH = 600;
 
 export default function PrayerRequest() {
   return (
@@ -18,7 +21,9 @@ function PrayerRequestForm() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [requestText, setRequestText] = useState("");
+  const [category, setCategory] = useState(PRAYER_CATEGORIES[0].value);
   const [confidential, setConfidential] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   useEffect(() => {
     if (groupName) {
@@ -31,7 +36,12 @@ function PrayerRequestForm() {
 
   const handleSubmit = async () => {
     setError(null);
+    setEmailError(null);
     if (!requestText.trim()) return setError("Please share what you'd like us to pray for.");
+    if (email.trim() && !isValidEmail(email)) {
+      setEmailError("Please enter a valid email address.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -43,6 +53,7 @@ function PrayerRequestForm() {
           phone: phone || undefined,
           email: email || undefined,
           request_text: requestText,
+          category,
           is_confidential: confidential,
         }),
       });
@@ -53,12 +64,19 @@ function PrayerRequestForm() {
         return;
       }
       setSuccess(data.message);
-      setFullName(""); setPhone(""); setEmail(""); setRequestText(""); setConfidential(false);
+      setFullName(""); setPhone(""); setEmail(""); setRequestText("");
+      setCategory(PRAYER_CATEGORIES[0].value); setConfidential(false);
     } catch {
       setError("Network error. Please check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const resetForSubmitAnother = () => {
+    setSuccess(null);
+    setError(null);
+    setEmailError(null);
   };
 
   return (
@@ -77,8 +95,13 @@ function PrayerRequestForm() {
         <div className="max-w-[1080px] mx-auto grid md:grid-cols-[1.4fr_1fr] gap-10 items-start">
           <div className="card">
             {success ? (
-              <div className="text-[13.5px] text-green-800 bg-green-50 border border-green-200 rounded-card px-4 py-4">
-                {success}
+              <div>
+                <div className="text-[13.5px] text-green-800 bg-green-50 border border-green-200 rounded-card px-4 py-4 mb-4">
+                  {success}
+                </div>
+                <button type="button" className="btn-secondary w-full" onClick={resetForSubmitAnother}>
+                  Submit another request
+                </button>
               </div>
             ) : (
               <>
@@ -88,8 +111,23 @@ function PrayerRequestForm() {
                   </div>
                 )}
                 <div className="mb-4">
+                  <label className="block text-[13px] font-semibold mb-1.5">What type of request is this?</label>
+                  <select className="form-input" value={category} onChange={(e) => setCategory(e.target.value)}>
+                    {PRAYER_CATEGORIES.map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-4">
                   <label className="block text-[13px] font-semibold mb-1.5">What would you like us to pray for?</label>
-                  <textarea placeholder="Share as much or as little as you'd like" className="form-input min-h-[110px]" value={requestText} onChange={(e) => setRequestText(e.target.value)} />
+                  <textarea
+                    placeholder="Share as much or as little as you'd like"
+                    className="form-input min-h-[110px]"
+                    maxLength={REQUEST_MAX_LENGTH}
+                    value={requestText}
+                    onChange={(e) => setRequestText(e.target.value)}
+                  />
+                  <p className="text-[12px] text-ink-soft mt-1 text-right">{requestText.length}/{REQUEST_MAX_LENGTH}</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div>
@@ -103,7 +141,14 @@ function PrayerRequestForm() {
                 </div>
                 <div className="mb-4">
                   <label className="block text-[13px] font-semibold mb-1.5">Email (optional)</label>
-                  <input type="email" placeholder="you@example.com" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)} />
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    className="form-input"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(null); }}
+                  />
+                  {emailError && <p className="text-[12px] text-red-600 mt-1">{emailError}</p>}
                 </div>
                 <div className="mb-4">
                   <label className="flex items-center gap-2 text-sm">
