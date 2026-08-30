@@ -5,6 +5,11 @@ import {
   type PaymentMethod
 } from '@/lib/types';
 import { randomUUID } from 'crypto';
+import { requireApiRole } from '@/lib/staff-auth';
+
+// Matches app/dashboard/treasurer/page.tsx's own role check —
+// the giving ledger is treasury-only.
+const GIVING_ROLES = ['treasury'] as const;
 
 // ============================================================
 // POST /api/treasurer/giving
@@ -15,6 +20,9 @@ import { randomUUID } from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...GIVING_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const body = await req.json();
 
     const {
@@ -231,6 +239,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...GIVING_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const { searchParams } = req.nextUrl;
     const fundId     = searchParams.get('fund_id');
     const memberId   = searchParams.get('member_id');

@@ -68,6 +68,14 @@ export function notFound(message = 'Not found') {
   return Response.json({ error: message }, { status: 404 });
 }
 
+export function unauthorized(message = 'Authentication required.') {
+  return Response.json({ error: message }, { status: 401 });
+}
+
+export function forbidden(message = 'Not authorized for this action.') {
+  return Response.json({ error: message }, { status: 403 });
+}
+
 export function serverError(message = 'Internal server error') {
   return Response.json({ error: message }, { status: 500 });
 }

@@ -1,6 +1,12 @@
 import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { ok, badRequest, notFound, serverError } from '@/lib/types';
+import { requireApiRole } from '@/lib/staff-auth';
+
+// This profile includes giving history and a computed "health score",
+// on top of the same pastoral/administrative fields as /api/members,
+// so treasury is included alongside the member-directory roles.
+const MEMBER_PROFILE_ROLES = ['administrative', 'pastoral', 'elder', 'treasury'] as const;
 
 // ============================================================
 // GET /api/members/[id]
@@ -14,6 +20,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireApiRole([...MEMBER_PROFILE_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const { id } = await params;
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
     if (!churchId) return serverError('Church ID not configured.');
@@ -136,6 +145,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireApiRole([...MEMBER_PROFILE_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const { id }   = await params;
     const body     = await req.json();
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;

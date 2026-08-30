@@ -4,6 +4,13 @@ import {
   ok, created, badRequest, serverError,
   pseudonymise, type MembershipStatus
 } from '@/lib/types';
+import { requireApiRole } from '@/lib/staff-auth';
+
+// Roles allowed to see/manage the member directory. Member records
+// carry pastoral (prayer group, follow-up status) and administrative
+// (contact details, membership status) data, so both categories —
+// plus elders, who oversee both — are included.
+const MEMBER_DIRECTORY_ROLES = ['administrative', 'pastoral', 'elder'] as const;
 
 // ============================================================
 // GET /api/members
@@ -18,6 +25,9 @@ import {
 
 export async function GET(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...MEMBER_DIRECTORY_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const { searchParams } = req.nextUrl;
     const status        = searchParams.get('status') as MembershipStatus | null;
     const prayerGroupId = searchParams.get('prayer_group_id');
@@ -25,8 +35,11 @@ export async function GET(req: NextRequest) {
     const search        = searchParams.get('search');
     const reportMode    = searchParams.get('report') === 'true';
 
-    // In a full implementation, church_id comes from the authenticated session.
-    // For Milestone 2 (Shauri Moyo single church), we use the env var directly.
+    // requireApiRole() above confirms the caller is a signed-in staff
+    // member with an allowed role — that's the access-control boundary.
+    // church_id itself still comes from the env var: this is a single-
+    // church deployment and StaffMember doesn't carry a church_id yet
+    // (see improvement-plan Task 0.3, multi-tenant churches table).
     const churchId = process.env.SHAURI_MOYO_CHURCH_ID;
     if (!churchId) {
       return serverError('Church ID not configured.');
@@ -107,6 +120,9 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...MEMBER_DIRECTORY_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const body = await req.json();
 
     const {

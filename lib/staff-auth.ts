@@ -1,5 +1,6 @@
 import { createSupabaseServerAuthClient } from "@/lib/supabase-server-auth";
 import { supabaseAdmin } from "@/lib/supabase";
+import { unauthorized, forbidden } from "@/lib/types";
 
 export type RoleCategory =
   | "pastoral"
@@ -53,4 +54,33 @@ export async function getCurrentStaff(): Promise<StaffMember | null> {
 export function hasAnyRole(staff: StaffMember | null, allowed: RoleCategory[]): boolean {
   if (!staff) return false;
   return staff.roles.some((r) => allowed.includes(r));
+}
+
+// ============================================================
+// API route guard. Wraps getCurrentStaff()/hasAnyRole() for use
+// inside Route Handlers (app/api/**), so an API route enforces the
+// exact same session and role data as the dashboard pages — one
+// staff-auth system, not two. Usage:
+//
+//   const auth = await requireApiRole(["treasury"]);
+//   if ("error" in auth) return auth.error;
+//   const { staff } = auth;
+//
+// Returns 401 when nobody is signed in, 403 when they're signed in
+// but lack an allowed role.
+// ============================================================
+export async function requireApiRole(
+  allowed: RoleCategory[]
+): Promise<{ staff: StaffMember } | { error: Response }> {
+  const staff = await getCurrentStaff();
+
+  if (!staff) {
+    return { error: unauthorized() };
+  }
+
+  if (!hasAnyRole(staff, allowed)) {
+    return { error: forbidden() };
+  }
+
+  return { staff };
 }

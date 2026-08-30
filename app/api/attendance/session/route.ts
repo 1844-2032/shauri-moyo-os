@@ -4,6 +4,12 @@ import {
   ok, created, badRequest, serverError,
   type ServiceType
 } from '@/lib/types';
+import { requireApiRole } from '@/lib/staff-auth';
+
+// Attendance-session management sits with whoever runs Sabbath
+// administration — pastoral/elder oversight plus the administrative
+// role that will own a dedicated clerk role category later.
+const ATTENDANCE_ROLES = ['administrative', 'pastoral', 'elder'] as const;
 
 // ============================================================
 // POST /api/attendance/session
@@ -15,6 +21,9 @@ import {
 
 export async function POST(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...ATTENDANCE_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const body = await req.json();
     const {
       service_date,
@@ -74,6 +83,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   try {
+    const auth = await requireApiRole([...ATTENDANCE_ROLES]);
+    if ('error' in auth) return auth.error;
+
     const { searchParams } = req.nextUrl;
     const dateFrom = searchParams.get('date_from');
     const dateTo   = searchParams.get('date_to');
