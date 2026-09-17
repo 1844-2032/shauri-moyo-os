@@ -43,15 +43,42 @@ coverage.os/
 File naming: `YYYY-MM-DD_CompanyName_prep.md` (+ matching `.docx` on request).
 
 ## Core command: `/prep [Company], [Country]`
-1. Web search: recent news, financials/performance signals, sector
-   positioning, regulatory context, leadership/ownership changes.
-2. Populate the Prep Brief template (below).
-3. Save as markdown to `{country}/{sector}/{company}/YYYY-MM-DD_prep.md`.
+This is a standing analytical bar, not a news roundup. A brief that only
+restates the company's own headline numbers has not met it — the point is
+to surface what the company's own messaging doesn't say, cross-checked
+against the regulator, the sovereign, and direct peers. Expect this to take
+15–25 searches per brief, not 5–6. Depth is not optional and not something
+to trade off for speed; if time is short, say so and flag which sections
+are thin rather than quietly shipping a shallow brief.
+
+1. Web search — company layer: recent news, financials/performance signals,
+   sector positioning, leadership/ownership changes, funding, expansions.
+2. Web search — regulatory & macro layer (required, not optional):
+   - The country's sovereign credit rating history (Moody's/S&P/Fitch) and
+     direction of travel, not just the latest action.
+   - Whether/how the company's own credit rating has moved with the
+     sovereign — this is usually checkable directly (rating agencies often
+     publish it) and is the cleanest evidence of sovereign-linkage risk,
+     not an assumption.
+   - The regulator's own published data or financial stability reports for
+     the sector, and any independent multilateral read (IMF, World Bank) of
+     the same economy — read them looking for places they diverge from
+     each other or from the regulator's own headline messaging.
+   - IMF program status and external-debt/rollover profile if relevant to
+     the country's near-term fiscal position.
+3. Web search — peer layer: benchmark the company's headline growth or
+   profitability against direct peers for the same period. A number that
+   is impressive on its own but bottom-of-peer-group is a different story
+   — say which one it is.
+4. Populate the Prep Brief template (below), including the Regulatory &
+   Macro Cross-Check section. Every claim should be dated and sourced;
+   distinguish what's confirmed from what's inferred.
+5. Save as markdown to `{country}/{sector}/{company}/YYYY-MM-DD_prep.md`.
    Infer sector if not given; ask if genuinely ambiguous.
-4. Run the confidentiality guardrail check before saving.
-5. Regenerate `dashboard.html` (`python3 scripts/generate_dashboard.py`).
-6. Offer a `.docx` export on request (use the docx skill).
-7. Natural-language requests work identically to the slash command —
+6. Run the confidentiality guardrail check before saving.
+7. Regenerate `dashboard.html` (`python3 scripts/generate_dashboard.py`).
+8. Offer a `.docx` export on request (use the docx skill).
+9. Natural-language requests work identically to the slash command —
    e.g. "I'm meeting the CFO of [Company] tomorrow, help me prep."
 
 ## Core command: `/sector [sector], [country]` (phase 2 — not yet built)
@@ -77,6 +104,25 @@ Generated: [today's date]
 ## Sector Context
 - Where this sector sits regionally right now (growth, stress points,
   regulatory environment, comparable deals if public)
+
+## Regulatory & Macro Cross-Check
+- Sovereign trajectory & linkage: the country's credit rating history
+  (not just the latest action) and whether/how it has moved the
+  company's own rating in lockstep — evidence of sovereign-ceiling
+  exposure, not an assumption
+- Regulator vs. independent read: where the regulator's own published
+  figures (reserves, current account, financial stability reports)
+  diverge from an independent multilateral's (IMF/World Bank) read of
+  the same economy, or from the company's own messaging
+- Peer-adjusted read: how the company's headline growth/profitability
+  compares to direct peers for the same period — flag if a "strong"
+  number is actually bottom-of-peer-group
+- Quality-of-earnings check: how much of any reported improvement is a
+  cyclical/monetary tailwind (rate cuts, one-off gains, FX moves) versus
+  structural, and what would reverse it
+- What couldn't be verified: name the specific gaps (e.g.
+  subsidiary-level capital ratios, latest supervisory survey findings)
+  rather than omitting them or guessing
 
 ## Origination Angles
 1. [Angle] — rationale — what product/structure fits

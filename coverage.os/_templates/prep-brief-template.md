@@ -13,6 +13,25 @@ Generated: [today's date]
 - Where this sector sits regionally right now (growth, stress points,
   regulatory environment, comparable deals if public)
 
+## Regulatory & Macro Cross-Check
+- Sovereign trajectory & linkage: the country's credit rating history
+  (not just the latest action) and whether/how it has moved the
+  company's own rating in lockstep — evidence of sovereign-ceiling
+  exposure, not an assumption
+- Regulator vs. independent read: where the regulator's own published
+  figures (reserves, current account, financial stability reports)
+  diverge from an independent multilateral's (IMF/World Bank) read of
+  the same economy, or from the company's own messaging
+- Peer-adjusted read: how the company's headline growth/profitability
+  compares to direct peers for the same period — flag if a "strong"
+  number is actually bottom-of-peer-group
+- Quality-of-earnings check: how much of any reported improvement is a
+  cyclical/monetary tailwind (rate cuts, one-off gains, FX moves) versus
+  structural, and what would reverse it
+- What couldn't be verified: name the specific gaps (e.g.
+  subsidiary-level capital ratios, latest supervisory survey findings)
+  rather than omitting them or guessing
+
 ## Origination Angles
 1. [Angle] — rationale — what product/structure fits
 2. [Angle] — rationale — what product/structure fits
